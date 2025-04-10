@@ -1,4 +1,6 @@
+const mongoose = require("mongoose");
 const Expense = require("../models/Expense");
+
 
 // @desc    Add new expense
 // @route   POST /api/expenses
@@ -31,6 +33,7 @@ exports.addExpense = async (req, res) => {
 // @access  Private
 exports.getUserExpenses = async (req, res) => {
   try {
+    // console.log("🔍 USER FROM TOKEN:", req.user);
     const expenses = await Expense.find({ user: req.user.userId }).sort({
       date: -1,
     });
@@ -45,11 +48,9 @@ exports.getUserExpenses = async (req, res) => {
 // @access  Private
 exports.getExpenseSummary = async (req, res) => {
   try {
-    console.log(req.user.userId);
-    
     
     const summary = await Expense.aggregate([
-      { $match: { user: req.user.userId } },
+      { $match: { user: new mongoose.Types.ObjectId(req.user.userId) } },
       {
         $group: {
           _id: "$category",
@@ -83,7 +84,7 @@ exports.getExpenseSummary = async (req, res) => {
 exports.getMonthlyExpenseStats = async (req, res) => {
   try {
     const stats = await Expense.aggregate([
-      { $match: { user: req.user.userId } },
+      { $match: { user: new mongoose.Types.ObjectId(req.user.userId) } },
       {
         $group: {
           _id: { $month: "$date" },
@@ -100,3 +101,5 @@ exports.getMonthlyExpenseStats = async (req, res) => {
       .json({ message: "Failed to fetch monthly stats", error: err });
   }
 };
+
+
