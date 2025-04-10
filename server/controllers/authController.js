@@ -51,7 +51,7 @@ exports.loginUser = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    console.log(token); // printing token key
+    // console.log(token); // printing token key
     
 
     res.status(200).json({

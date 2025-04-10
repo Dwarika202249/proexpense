@@ -5,7 +5,16 @@ const {
   getUserExpenses
 } = require("../controllers/expenseController");
 
-const verifyToken = require("../middlewares/authMiddleware");
+const {
+    getExpenseSummary,
+    getMonthlyExpenseStats
+  } = require("../controllers/expenseController");
+  
+  
+  
+  const verifyToken = require("../middlewares/authMiddleware");
+  
+
 
 // @route   POST /api/expenses
 // @desc    Add new expense
@@ -16,5 +25,15 @@ router.post("/", verifyToken, addExpense);
 // @desc    Get user's expenses
 // @access  Private
 router.get("/", verifyToken, getUserExpenses);
+
+// @route   GET /api/expenses/summary
+// @desc    Add new expense
+// @access  Private
+router.get("/summary", verifyToken, getExpenseSummary);
+
+// @route   GET /api/expenses/monthly
+// @desc    Add new expense
+// @access  Private
+router.get("/monthly", verifyToken, getMonthlyExpenseStats);
 
 module.exports = router;
