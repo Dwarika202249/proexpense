@@ -20,7 +20,7 @@ const RecentExpenses = ({ expenses }) => {
 
               {/* RIGHT SIDE: Amount + Category */}
               <div className="text-right">
-                <p className="font-semibold text-red-600">₹{expense.amount}</p>
+                <p className="font-semibold text-red-600">- ₹{expense.amount}</p>
                 <p className="text-xs text-gray-400">{expense.category}</p>
               </div>
             </li>

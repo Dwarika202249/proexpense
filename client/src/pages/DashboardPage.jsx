@@ -4,6 +4,8 @@ import API from "../services/api";
 import SummaryBox from "../components/SummaryBox";
 import CategoryGrid from "../components/CategoryGrid";
 import RecentExpenses from "../components/RecentExpenses";
+import MonthlyChart from "../components/MonthlyChart";
+import CategoryChart from "../components/CategoryChart";
 
 const DashboardPage = () => {
   const [summary, setSummary] = useState(null);
@@ -36,7 +38,9 @@ const DashboardPage = () => {
 
   return (
     <div className="p-6 space-y-8 bg-gray-50 min-h-screen">
-      <h2 className="text-2xl font-bold text-green-700">Welcome back, DK! 👋</h2>
+      <h2 className="text-2xl font-bold text-green-700">
+        Welcome back, DK! 👋
+      </h2>
 
       {/* Summary Section */}
       <SummaryBox total={summary.totalSpent} />
@@ -46,6 +50,11 @@ const DashboardPage = () => {
 
       {/* Recent Expenses */}
       <RecentExpenses expenses={recentExpenses} />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <MonthlyChart stats={monthlyStats} />
+        <CategoryChart breakdown={summary.categoryBreakdown} />
+      </div>
     </div>
   );
 };
