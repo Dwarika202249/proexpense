@@ -17,10 +17,6 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/expenses", expenseRoutes);
 
-// Sample route
-// app.get("/", (req,res) => {
-//     res.send("Proexpense API is working...");
-// });
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI).then(()=>{

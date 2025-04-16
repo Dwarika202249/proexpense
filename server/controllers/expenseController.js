@@ -7,8 +7,10 @@ const Expense = require("../models/Expense");
 // @access  Private
 exports.addExpense = async (req, res) => {
   try {
-    const { title, amount, category, date } = req.body;
-
+    console.log("Expense details:",req.body);
+    
+    const { title, category, date } = req.body;
+    const amount = Number(req.body.amount);
     if (!title || !amount || !category || !date) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -21,8 +23,15 @@ exports.addExpense = async (req, res) => {
       date,
     });
 
+    console.log("New expense created: ",expense);
+    
+
     await expense.save();
+    console.log("Expense added success");
+    
     res.status(201).json({ message: "Expense added successfully 💸", expense });
+    console.log(expense);
+
   } catch (error) {
     res.status(500).json({ message: "Failed to add expense", error });
   }
