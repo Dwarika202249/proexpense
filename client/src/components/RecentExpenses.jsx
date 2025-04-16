@@ -13,7 +13,7 @@ const RecentExpenses = ({ expenses }) => {
               <div className="flex items-start gap-3">
                 <span className="text-xl">{getCategoryEmoji(expense.category)}</span>
                 <div>
-                  <p className="text-md font-medium text-gray-800">{expense.title}</p>
+                  <p className="text-md font-medium text-gray-800 capitalize">{expense.title}</p>
                   <p className="text-sm text-gray-500">{new Date(expense.date).toDateString()}</p>
                 </div>
               </div>

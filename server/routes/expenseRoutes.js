@@ -2,17 +2,14 @@ const express = require("express");
 const router = express.Router();
 const {
   addExpense,
-  getUserExpenses
+  getUserExpenses,
+  getFilteredExpenses,
+  getExpenseSummary,
+  getMonthlyExpenseStats
 } = require("../controllers/expenseController");
 
-const {
-    getExpenseSummary,
-    getMonthlyExpenseStats
-  } = require("../controllers/expenseController");
   
-  
-  
-  const verifyToken = require("../middlewares/authMiddleware");
+const verifyToken = require("../middlewares/authMiddleware");
   
 
 
@@ -27,7 +24,7 @@ router.post("/", verifyToken, addExpense);
 router.get("/", verifyToken, getUserExpenses);
 
 // @route   GET /api/expenses/summary
-// @desc    Add new expense
+// @desc    summmary
 // @access  Private
 router.get("/summary", verifyToken, getExpenseSummary);
 
@@ -36,5 +33,9 @@ router.get("/summary", verifyToken, getExpenseSummary);
 // @access  Private
 router.get("/monthly", verifyToken, getMonthlyExpenseStats);
 
+// @route   GET /api/expenses/filter
+// @desc    get filtered data
+// @access  Private
+router.get("/filter", verifyToken, getFilteredExpenses);
 
 module.exports = router;

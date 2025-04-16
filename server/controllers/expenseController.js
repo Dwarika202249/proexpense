@@ -7,7 +7,6 @@ const Expense = require("../models/Expense");
 // @access  Private
 exports.addExpense = async (req, res) => {
   try {
-    console.log("Expense details:",req.body);
     
     const { title, category, date } = req.body;
     const amount = Number(req.body.amount);
@@ -22,27 +21,76 @@ exports.addExpense = async (req, res) => {
       category,
       date,
     });
-
-    console.log("New expense created: ",expense);
     
 
     await expense.save();
-    console.log("Expense added success");
     
     res.status(201).json({ message: "Expense added successfully 💸", expense });
-    console.log(expense);
 
   } catch (error) {
-    res.status(500).json({ message: "Failed to add expense", error });
+    res.status(500).json({ message: "Failed to add`, expense", error });
   }
 };
+
+// @desc    Update an expense
+// @route   PUT /api/expenses/:id
+// @access  Private
+exports.updateExpense = async (req, res) => {
+  try {
+    const expenseId = req.params.id;
+    const { title, amount, category, date } = req.body;
+
+    if (!title || !amount || !category || !date) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const expense = await Expense.findOne({ _id: expenseId, user: req.user.userId });
+
+    if (!expense) {
+      return res.status(404).json({ message: "Expense not found or unauthorized" });
+    }
+
+    expense.title = title;
+    expense.amount = Number(amount);
+    expense.category = category;
+    expense.date = new Date(date);
+
+    await expense.save();
+
+    res.status(200).json({ message: "Expense updated successfully ✨", expense });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update expense", error: err });
+  }
+};
+
+// @desc    Delete an expense
+// @route   DELETE /api/expenses/:id
+// @access  Private
+exports.deleteExpense = async (req, res) => {
+  try {
+    const expenseId = req.params.id;
+
+    const expense = await Expense.findOneAndDelete({
+      _id: expenseId,
+      user: req.user.userId,
+    });
+
+    if (!expense) {
+      return res.status(404).json({ message: "Expense not found or unauthorized" });
+    }
+
+    res.status(200).json({ message: "Expense deleted successfully 🗑️" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete expense", error: err });
+  }
+};
+
 
 // @desc    Get all expenses for user
 // @route   GET /api/expenses
 // @access  Private
 exports.getUserExpenses = async (req, res) => {
   try {
-    // console.log("🔍 USER FROM TOKEN:", req.user);
     const expenses = await Expense.find({ user: req.user.userId }).sort({
       date: -1,
     });
@@ -51,6 +99,40 @@ exports.getUserExpenses = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch expenses", error });
   }
 };
+
+// @desc    Get filtered expenses by category & date range
+// @route   GET /api/expenses/filter
+// @access  Private
+exports.getFilteredExpenses = async (req, res) => {
+  try {
+    const { category, from, to } = req.query;
+
+    let query = { user: req.user.userId };
+
+    // Add category filter if present
+    if (category) {
+      query.category = category;
+    }
+
+    // Add date range if from & to are present
+    if (from && to) {
+      query.date = {
+        $gte: new Date(from),
+        $lte: new Date(to),
+      };
+    }
+
+    const expenses = await Expense.find(query).sort({ date: -1 });
+
+    res.status(200).json(expenses);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch filtered expenses",
+      error: error.message,
+    });
+  }
+};
+
 
 // @desc    Get summary for user
 // @route   GET /api/expenses/summary
@@ -67,15 +149,10 @@ exports.getExpenseSummary = async (req, res) => {
         },
       },
     ]);
-
-    // console.log(summary);
-    // console.log(Expense.cat);
     
     
 
     const totalSpent = summary.reduce((acc, cat) => acc + cat.totalAmount, 0);
-
-    // console.log(totalSpent);
     
 
     res.status(200).json({
@@ -110,5 +187,6 @@ exports.getMonthlyExpenseStats = async (req, res) => {
       .json({ message: "Failed to fetch monthly stats", error: err });
   }
 };
+
 
 

@@ -1,6 +1,5 @@
 // src/components/SummaryBox.jsx
-const SummaryBox = ({ total }) => {
-  const income = 25000; // Abhi dummy income, later dynamic banaenge
+const SummaryBox = ({ total, income}) => {
   const balance = income - total;
 
   return (
