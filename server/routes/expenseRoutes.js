@@ -5,7 +5,9 @@ const {
   getUserExpenses,
   getFilteredExpenses,
   getExpenseSummary,
-  getMonthlyExpenseStats
+  getMonthlyExpenseStats,
+  updateExpense,
+  deleteExpense
 } = require("../controllers/expenseController");
 
   
@@ -37,5 +39,16 @@ router.get("/monthly", verifyToken, getMonthlyExpenseStats);
 // @desc    get filtered data
 // @access  Private
 router.get("/filter", verifyToken, getFilteredExpenses);
+
+
+// @desc    Update an expense
+// @route   PUT /api/expenses/:id
+// @access  Private
+router.put("/:id", verifyToken, updateExpense);
+
+// @desc    Delete an expense
+// @route   DELETE /api/expenses/:id
+// @access  Private
+router.delete("/:id", verifyToken, deleteExpense);
 
 module.exports = router;

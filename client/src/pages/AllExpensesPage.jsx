@@ -2,10 +2,25 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import { toast } from "react-toastify";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import EditExpenseModal from "../components/EditExpenseModal";
+import DeleteConfirmModal from "../components/DeleteConfirmModal";
 
-const categories = ["Food", "Travel", "Entertainment", "Shopping", "Health", "Other"];
+const categories = [
+  "Food",
+  "Travel",
+  "Entertainment",
+  "Shopping",
+  "Health",
+  "Other",
+];
 
 const AllExpensesPage = () => {
+  const [editingExpense, setEditingExpense] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedExpense, setSelectedExpense] = useState(null);
+
   const [filters, setFilters] = useState({
     category: "",
     from: "",
@@ -32,8 +47,37 @@ const AllExpensesPage = () => {
     }
   };
 
+  const handleEditClick = (expense) => {
+    setEditingExpense(expense);
+    setShowEditModal(true);
+  };
+
+  const handleExpenseUpdated = async () => {
+    setShowEditModal(false);
+    await fetchFilteredExpenses(); // fetch fresh list
+  };
+
+  const handleDeleteClick = (expense) => {
+    setSelectedExpense(expense);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await API.delete(`/expenses/${selectedExpense._id}`);
+      toast.success("Expense deleted successfully");
+      setExpenses((prev) =>
+        prev.filter((exp) => exp._id !== selectedExpense._id)
+      );
+      setDeleteModalOpen(false);
+    } catch (err) {
+      console.error("Failed to delete expense:", err);
+      toast.error("Failed to delete expense");
+    }
+  };
+
   useEffect(() => {
-    fetchFilteredExpenses(); // Fetch default on load
+    fetchFilteredExpenses();
   }, []);
 
   const handleFilterSubmit = (e) => {
@@ -46,7 +90,10 @@ const AllExpensesPage = () => {
       <h2 className="text-2xl font-bold text-green-700">🔎 All Expenses</h2>
 
       {/* Filter UI */}
-      <form onSubmit={handleFilterSubmit} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <form
+        onSubmit={handleFilterSubmit}
+        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+      >
         <select
           name="category"
           value={filters.category}
@@ -55,7 +102,9 @@ const AllExpensesPage = () => {
         >
           <option value="">All Categories</option>
           {categories.map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
           ))}
         </select>
 
@@ -93,6 +142,7 @@ const AllExpensesPage = () => {
                 <th className="py-2 px-4">Amount</th>
                 <th className="py-2 px-4">Category</th>
                 <th className="py-2 px-4">Date</th>
+                <th className="py-2 px-4">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -104,14 +154,52 @@ const AllExpensesPage = () => {
                   <td className="py-2 px-4">
                     {new Date(exp.date).toLocaleDateString()}
                   </td>
+                  <td className="py-2 px-4 flex gap-2">
+                    <button
+                      onClick={() => handleEditClick(exp)}
+                      className="text-blue-600 hover:underline cursor-pointer"
+                    >
+                      <FaEdit className="text-blue-600 hover:text-blue-800" />
+                    </button>
+                    {/* <button
+                      onClick={() => handleDeleteClick(exp._id)}
+                      className="text-red-600 hover:underline cursor-pointer"
+                    >
+                      <FaTrash className="text-red-600 hover:text-red-800" />
+                    </button> */}
+                    <button
+                      onClick={() => handleDeleteClick(exp)}
+                      className="text-red-600 hover:underline cursor-pointer"
+                    >
+                      <FaTrash className="text-red-600 hover:text-red-800" />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       ) : (
-        <p className="text-gray-500">No expenses found with selected filters.</p>
+        <p className="text-gray-500">
+          No expenses found with selected filters.
+        </p>
       )}
+
+      {showEditModal && editingExpense && (
+        <EditExpenseModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          expense={editingExpense}
+          onUpdated={handleExpenseUpdated}
+        />
+      )}
+
+      <DeleteConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        expenseTitle={selectedExpense?.title}
+      />
     </div>
   );
 };
