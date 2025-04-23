@@ -1,11 +1,22 @@
 import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend } from "chart.js";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
 
+// 🔥 Month names array for mapping
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 const MonthlyChart = ({ stats }) => {
   const data = {
-    labels: stats.map((item) => `Month ${item._id}`),
+    labels: stats.map((item) => MONTH_NAMES[item._id - 1]), // 🧠 converting 1-12 -> Jan-Dec
     datasets: [
       {
         label: "Monthly Expenses",

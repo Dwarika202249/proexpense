@@ -134,14 +134,60 @@ exports.getFilteredExpenses = async (req, res) => {
 };
 
 
-// @desc    Get summary for user
-// @route   GET /api/expenses/summary
+// // @desc    Get summary for user
+// // @route   GET /api/expenses/summary
+// // @access  Private
+// exports.getExpenseSummary = async (req, res) => {
+//   try {
+    
+//     const summary = await Expense.aggregate([
+//       { $match: { user: new mongoose.Types.ObjectId(req.user.userId) } },
+//       {
+//         $group: {
+//           _id: "$category",
+//           totalAmount: { $sum: "$amount" },
+//         },
+//       },
+//     ]);
+    
+    
+
+//     const totalSpent = summary.reduce((acc, cat) => acc + cat.totalAmount, 0);
+    
+
+//     res.status(200).json({
+//       totalSpent,
+//       categoryBreakdown: summary,
+//     });
+//   } catch (err) {
+//     res.status(500).json({ message: "Failed to get summary", error: err });
+//   }
+// };
+
+// @desc    Get summary for user (with optional month filter)
+// @route   GET /api/expenses/summary?month=2024-04
 // @access  Private
 exports.getExpenseSummary = async (req, res) => {
   try {
-    
+    const { month } = req.query;
+
+    const matchQuery = {
+      user: new mongoose.Types.ObjectId(req.user.userId),
+    };
+
+    if (month) {
+      const startDate = new Date(`${month}-01`);
+      const endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + 1);
+
+      matchQuery.date = {
+        $gte: startDate,
+        $lt: endDate,
+      };
+    }
+
     const summary = await Expense.aggregate([
-      { $match: { user: new mongoose.Types.ObjectId(req.user.userId) } },
+      { $match: matchQuery },
       {
         $group: {
           _id: "$category",
@@ -149,11 +195,8 @@ exports.getExpenseSummary = async (req, res) => {
         },
       },
     ]);
-    
-    
 
     const totalSpent = summary.reduce((acc, cat) => acc + cat.totalAmount, 0);
-    
 
     res.status(200).json({
       totalSpent,
@@ -163,6 +206,7 @@ exports.getExpenseSummary = async (req, res) => {
     res.status(500).json({ message: "Failed to get summary", error: err });
   }
 };
+
 
 // @desc    Get monthly expenses for user
 // @route   GET /api/expenses/monthly
