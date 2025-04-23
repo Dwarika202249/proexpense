@@ -147,7 +147,7 @@ const DashboardPage = () => {
       <SummaryBox total={summary.totalSpent} income={income} />
 
       {/* ✅ Month-based Category Breakdown */}
-      <CategoryGrid breakdown={summary.categoryBreakdown} />
+      <CategoryGrid breakdown={summary.categoryBreakdown} month={month} />
 
       {/* ✅ Month-based Recent Expenses */}
       <RecentExpenses expenses={recentExpenses} />
@@ -155,7 +155,7 @@ const DashboardPage = () => {
       {/* ✅ Charts (monthly trend + current month pie) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <MonthlyChart stats={monthlyStats} />
-        <CategoryChart breakdown={summary.categoryBreakdown} />
+        <CategoryChart breakdown={summary.categoryBreakdown} month={month} />
       </div>
     </div>
   );

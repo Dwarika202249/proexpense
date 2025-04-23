@@ -1,7 +1,16 @@
-const CategoryGrid = ({ breakdown }) => {
+const CategoryGrid = ({ breakdown, month }) => {
+  // 💡 Format month string from "2025-04" to "April 2025"
+  const formatMonthName = (monthStr) => {
+    if (!monthStr) return "";
+    const [year, month] = monthStr.split("-");
+    const date = new Date(`${month}/01/${year}`);
+    return date.toLocaleString("default", { month: "long", year: "numeric" });
+  };
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4 text-green-700">📊 Category Breakdown</h3>
+      <h3 className="text-lg font-semibold mb-4 text-green-700">📊 Category Breakdown {month && (
+          <span className="text-green-700">({formatMonthName(month)})</span>
+        )}</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {breakdown.length > 0 ? (
           breakdown.map((cat, idx) => (

@@ -32,11 +32,20 @@ const MonthlyIncomeCard = ({ month, setMonth, income, setIncome }) => {
     }
   };
 
+  const formatMonthName = (monthStr) => {
+    if (!monthStr) return "";
+    const [year, month] = monthStr.split("-");
+    const date = new Date(`${month}/01/${year}`);
+    return date.toLocaleString("default", { month: "long", year: "numeric" });
+  };
+
   return (
     <div className="bg-white p-5 rounded-lg shadow flex flex-col gap-3">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-bold text-green-700">
-          Monthly Income ({month})
+          Monthly Income {month && (
+          <span className="text-green-700">({formatMonthName(month)})</span>
+        )}
         </h3>
         <input
           type="month"
