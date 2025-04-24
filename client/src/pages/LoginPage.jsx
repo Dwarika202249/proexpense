@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import GoogleAuth from "../components/GoogleAuth";
+import useRedirectIfLoggedIn from "../hooks/useRedirectIfLoggedIn";
 
 const LoginPage = () => {
   const [error, setError] = useState(null);
@@ -11,6 +12,7 @@ const LoginPage = () => {
     email: "",
     password: "",
   });
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,7 +26,6 @@ const LoginPage = () => {
         formData
       );
       localStorage.setItem("token", res.data.token);
-      // alert("Login successful!");
       navigate("/dashboard");
     } catch (err) {
       setError("Login failed: " + err.response?.data?.msg);
@@ -49,6 +50,9 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+
+  useRedirectIfLoggedIn();
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-green-50">

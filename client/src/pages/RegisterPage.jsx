@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import GoogleAuth from "../components/GoogleAuth";
+import useRedirectIfLoggedIn from "../hooks/useRedirectIfLoggedIn";
 
 const RegisterPage = () => {
   const [error, setError] = useState(null);
@@ -47,6 +48,8 @@ const RegisterPage = () => {
     }
   };
 
+  useRedirectIfLoggedIn();
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-green-50">
       <form
@@ -89,7 +92,7 @@ const RegisterPage = () => {
         </button>
         <p className="text-sm text-center mt-4">
           Already have an account?{" "}
-          <Link to="/" className="text-green-600 font-semibold hover:underline">
+          <Link to="/login" className="text-green-600 font-semibold hover:underline">
             Login here
           </Link>
         </p>

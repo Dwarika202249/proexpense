@@ -7,6 +7,9 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import AddExpensePage from "./pages/AddExpensePage";
 import AllExpensesPage from "./pages/AllExpensesPage";
+import HomePage from "./pages/HomePage";
+import Navbar from "./components/Navbar";
+import NotFoundPage from "./pages/NotFoundPage"
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,12 +18,14 @@ function App() {
   return (
     <>
       <Router>
+        <Navbar /> {/* 👈 show on all pages */}
         <Routes>
-          {/* Auth routes */}
-          <Route path="/" element={<LoginPage />} />
+          {/* Public Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
-          {/* Protected Layout routes */}
+          {/* Protected Routes */}
           <Route
             element={
               <ProtectedRoute>
@@ -32,6 +37,7 @@ function App() {
             <Route path="/add-expense" element={<AddExpensePage />} />
             <Route path="/all-expenses" element={<AllExpensesPage />} />
           </Route>
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>
       <ToastContainer position="top-right" autoClose={3000} />
