@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import GoogleAuth from "../components/GoogleAuth";
 
 const RegisterPage = () => {
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -22,6 +25,25 @@ const RegisterPage = () => {
       navigate("/");
     } catch (err) {
       alert("Registration failed: " + err.response?.data?.msg);
+    }
+  };
+
+  const handleGoogleLogin = async (token) => {
+    setLoading(true);
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/google",
+
+        {
+          id_token: token,
+        }
+      );
+      localStorage.setItem("token", res.data.token);
+      navigate("/dashboard");
+    } catch (error) {
+      setError("Google login failed.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,6 +93,9 @@ const RegisterPage = () => {
             Login here
           </Link>
         </p>
+        <divs className="w-full mt-5 flex justify-center items-center">
+          <GoogleAuth onSuccess={handleGoogleLogin} />
+        </divs>
       </form>
     </div>
   );

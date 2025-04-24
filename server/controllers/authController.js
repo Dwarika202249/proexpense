@@ -2,6 +2,44 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+// @desc    Register/login new user using Google
+// @route   POST /api/auth/google
+exports.googleLogin = async (req, res) => {
+  const { id_token } = req.body;
+  
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: id_token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+
+    let user = await User.findOne({ email: payload.email });
+    if (!user) {
+      user = new User({
+        name: payload.name,
+        email: payload.email,
+        googleId: payload.sub,
+      });
+      await user.save();
+    }
+
+    const token = jwt.sign(
+      { userId: user._id, name: user.name },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({ token });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
 // @desc    Register new user
 // @route   POST /api/auth/register
 exports.registerUser = async (req, res) => {
@@ -67,3 +105,4 @@ exports.loginUser = async (req, res) => {
     res.status(500).json({ message: "Server error during login", error });
   }
 };
+

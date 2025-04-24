@@ -19,13 +19,15 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, "Password is required"],
-    minlength: 6,
+    required: function() {
+      return !this.googleId; // password required only if NOT a Google user
+    },
   },
   income: {
     type: Number,
     default: 0, // Default value set to 0
   },
+  googleId: { type: String },
   createdAt: {
     type: Date,
     default: Date.now,
