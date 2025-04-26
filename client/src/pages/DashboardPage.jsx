@@ -9,6 +9,9 @@ import CategoryChart from "../components/CategoryChart";
 import MonthlyIncomeCard from "../components/MonthlyIncomeCard";
 import { getCurrentMonth } from "../utils/dateUtils";
 import { fetchMonthlyIncome } from "../services/incomeApi";
+import { toast } from "react-toastify";
+import MonthlySummary from "../components/MonthlySummary";
+import MonthlyBudgetAdvisor from "../components/MonthlyBudgetAdvisor";
 
 const DashboardPage = () => {
   const [user, setUser] = useState(null);
@@ -83,6 +86,12 @@ const DashboardPage = () => {
         income={income}
         setIncome={setIncome}
       />
+
+      {/* 🧠 AI Monthly Summary */}
+      <MonthlySummary />
+
+      {/* Monthly Budget Advisor */}
+      <MonthlyBudgetAdvisor />
 
       {/* ✅ Month-based Summary */}
       <SummaryBox total={summary.totalSpent} income={income} />
